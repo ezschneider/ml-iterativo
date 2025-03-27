@@ -1,6 +1,4 @@
 import pandas as pd
-import os
-import joblib
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
 from sklearn.compose import ColumnTransformer
@@ -10,9 +8,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
-
-RESULTS_DIR = "results"
-os.makedirs(RESULTS_DIR, exist_ok=True)
 
 class MLPipeline:
     def __init__(self, df: pd.DataFrame, target_column: str):
@@ -77,7 +72,6 @@ class MLPipeline:
         best_score = 0
         best_model_name = None
         best_report = None
-        best_pipeline = None
         best_predictions = None
 
         for name, model in self.models.items():
@@ -96,21 +90,12 @@ class MLPipeline:
                 best_model_name = name
                 y_pred = grid.predict(X_test)
                 best_report = classification_report(y_test, y_pred, output_dict=True)
-                best_pipeline = grid.best_estimator_
                 best_predictions = pd.DataFrame({"actual": y_test, "predicted": y_pred})
-
-        # Salvar modelo e previsões
-        model_path = os.path.join(RESULTS_DIR, f"{best_model_name}_model.joblib")
-        preds_path = os.path.join(RESULTS_DIR, f"{best_model_name}_predictions.csv")
-
-        joblib.dump(best_pipeline, model_path)
-        best_predictions.to_csv(preds_path, index=False)
 
         return {
             "problem_type": self.problem_type,
             "best_model": best_model_name,
             "accuracy": best_score,
             "report": best_report,
-            "model_path": model_path,
-            "predictions_path": preds_path
+            "predictions": best_predictions.to_dict(orient="records")
         }
