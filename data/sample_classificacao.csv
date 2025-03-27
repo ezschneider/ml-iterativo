@@ -1,0 +1,9 @@
+idade,renda,genero,estado_civil,comprou
+25,3000,masculino,solteiro,sim
+45,8000,feminino,casado,nao
+35,5000,feminino,casado,sim
+33,4000,masculino,solteiro,nao
+52,9000,feminino,casado,nao
+23,2000,masculino,solteiro,sim
+40,7000,masculino,casado,nao
+60,10000,feminino,casado,nao

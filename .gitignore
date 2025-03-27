@@ -1,3 +1,7 @@
+# Folder with the results of the model build and result of the model evaluation
+backend/results/
+backend/temp_data/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
