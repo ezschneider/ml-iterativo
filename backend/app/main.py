@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 import pandas as pd
 import uuid
 import os
-from app.ml.pipeline import run_pipeline
+from app.ml.pipeline import MLPipeline
 
 app = FastAPI()
 
@@ -34,7 +34,8 @@ async def upload_dataset(file: UploadFile, target_column: str = Form(...)):
         if target_column not in df.columns:
             return JSONResponse(status_code=400, content={"error": "Target column not found in dataset."})
 
-        result = run_pipeline(df, target_column)
+        pipeline = MLPipeline(df, target_column)
+        result = pipeline.run()
 
         return {"job_id": job_id, "result": result}
 
