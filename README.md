@@ -114,7 +114,7 @@ ml-interativo/
 ---
 
 ## 📬 Contato
-Desenvolvido por [Seu Nome] — 💼 Cientista de Dados e Desenvolvedor Python
+Desenvolvido por Ezequiel Schneider — 💼 Cientista de Dados e Desenvolvedor Python
 
 Contribuições, sugestões e ideias são bem-vindas!
 
