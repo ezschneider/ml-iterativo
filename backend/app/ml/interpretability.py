@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import base64
 from io import BytesIO
+import shap
+from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
+
 
 def generate_feature_importance(model, feature_names):
     if hasattr(model, "feature_importances_"):
@@ -29,8 +32,8 @@ def generate_feature_importance(model, feature_names):
     buf.seek(0)
     return base64.b64encode(buf.read()).decode("utf-8")
 
+
 def generate_confusion_matrix(y_true, y_pred):
-    from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
     cm = confusion_matrix(y_true, y_pred)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     fig, ax = plt.subplots(figsize=(5, 4))
@@ -40,3 +43,24 @@ def generate_confusion_matrix(y_true, y_pred):
     plt.close(fig)
     buf.seek(0)
     return base64.b64encode(buf.read()).decode("utf-8")
+
+
+def generate_shap_summary_plot(pipeline, X_sample):
+    try:
+        model = pipeline.named_steps["classifier"]
+        preprocessor = pipeline.named_steps["preprocessor"]
+        X_transformed = preprocessor.transform(X_sample)
+
+        explainer = shap.Explainer(model, X_transformed)
+        shap_values = explainer(X_transformed)
+
+        fig = plt.figure(figsize=(8, 6))
+        shap.plots.beeswarm(shap_values, show=False)
+
+        buf = BytesIO()
+        plt.savefig(buf, format="png")
+        plt.close(fig)
+        buf.seek(0)
+        return base64.b64encode(buf.read()).decode("utf-8")
+    except Exception:
+        return None

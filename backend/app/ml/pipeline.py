@@ -11,7 +11,8 @@ from sklearn.metrics import classification_report
 
 from app.ml.interpretability import (
     generate_confusion_matrix,
-    generate_feature_importance
+    generate_feature_importance,
+    generate_shap_summary_plot
 )
 
 class MLPipeline:
@@ -81,6 +82,7 @@ class MLPipeline:
         best_predictions = None
         best_conf_matrix = None
         best_feature_importance = None
+        best_shap_summary = None
 
         for name, model in self.models.items():
             pipe = Pipeline(steps=[
@@ -100,10 +102,13 @@ class MLPipeline:
                 best_report = classification_report(y_test, y_pred, output_dict=True)
                 best_predictions = pd.DataFrame({"actual": y_test, "predicted": y_pred})
                 best_conf_matrix = generate_confusion_matrix(y_test, y_pred)
+
                 feature_names = grid.best_estimator_.named_steps["preprocessor"].get_feature_names_out()
                 best_feature_importance = generate_feature_importance(
                     grid.best_estimator_.named_steps["classifier"], feature_names
                 )
+
+                best_shap_summary = generate_shap_summary_plot(grid.best_estimator_, X_test)
 
         return {
             "problem_type": self.problem_type,
@@ -112,5 +117,6 @@ class MLPipeline:
             "report": best_report,
             "confusion_matrix_image": best_conf_matrix,
             "feature_importance_image": best_feature_importance,
+            "shap_summary_image": best_shap_summary,
             "predictions": best_predictions.to_dict(orient="records")
         }
