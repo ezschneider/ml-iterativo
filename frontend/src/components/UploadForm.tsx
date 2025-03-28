@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import { motion } from "framer-motion";
 
 export default function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
@@ -29,8 +30,22 @@ export default function UploadForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Upload de Dataset</h1>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <motion.h1
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="text-2xl font-bold mb-4"
+      >
+        Upload de Dataset
+      </motion.h1>
+
+      <motion.form
+        onSubmit={handleSubmit}
+        className="space-y-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.2 }}
+      >
         <input
           type="file"
           accept=".csv"
@@ -51,10 +66,15 @@ export default function UploadForm() {
         >
           {loading ? "Processando..." : "Enviar"}
         </button>
-      </form>
+      </motion.form>
 
       {result && (
-        <div className="mt-6">
+        <motion.div
+          className="mt-6"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <h2 className="text-xl font-semibold">Resultado</h2>
           <p className="mt-2">Modelo: {result.best_model}</p>
           <p>Acurácia: {(result.accuracy * 100).toFixed(2)}%</p>
@@ -87,7 +107,7 @@ export default function UploadForm() {
               />
             </div>
           )}
-        </div>
+        </motion.div>
       )}
     </div>
   );
