@@ -9,6 +9,11 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report
 
+from app.ml.interpretability import (
+    generate_confusion_matrix,
+    generate_feature_importance
+)
+
 class MLPipeline:
     def __init__(self, df: pd.DataFrame, target_column: str):
         self.df = df
@@ -60,6 +65,7 @@ class MLPipeline:
             ]
         )
 
+        self.feature_names = num_cols + cat_cols
         return preprocessor
 
     def run(self):
@@ -73,6 +79,8 @@ class MLPipeline:
         best_model_name = None
         best_report = None
         best_predictions = None
+        best_conf_matrix = None
+        best_feature_importance = None
 
         for name, model in self.models.items():
             pipe = Pipeline(steps=[
@@ -91,11 +99,18 @@ class MLPipeline:
                 y_pred = grid.predict(X_test)
                 best_report = classification_report(y_test, y_pred, output_dict=True)
                 best_predictions = pd.DataFrame({"actual": y_test, "predicted": y_pred})
+                best_conf_matrix = generate_confusion_matrix(y_test, y_pred)
+                feature_names = grid.best_estimator_.named_steps["preprocessor"].get_feature_names_out()
+                best_feature_importance = generate_feature_importance(
+                    grid.best_estimator_.named_steps["classifier"], feature_names
+                )
 
         return {
             "problem_type": self.problem_type,
             "best_model": best_model_name,
             "accuracy": best_score,
             "report": best_report,
+            "confusion_matrix_image": best_conf_matrix,
+            "feature_importance_image": best_feature_importance,
             "predictions": best_predictions.to_dict(orient="records")
         }
